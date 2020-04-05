@@ -1,0 +1,106 @@
+{
+  "project_info": {
+    "project_number": "238822026690",
+    "firebase_url": "https://flashchat-4605a.firebaseio.com",
+    "project_id": "flashchat-4605a",
+    "storage_bucket": "flashchat-4605a.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:238822026690:android:e42c203d1dfca2d94ffa5b",
+        "android_client_info": {
+          "package_name": "com.zmediaz.fireship"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "238822026690-viefthvara5ijl5sg2a8653tha2dpqj1.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBylgkiPLcCZQLuj7EB2BCDHfJGxeBMyvQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "238822026690-viefthvara5ijl5sg2a8653tha2dpqj1.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:238822026690:android:a36255695f3b934e4ffa5b",
+        "android_client_info": {
+          "package_name": "com.zmediaz.flash_chat"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "238822026690-viefthvara5ijl5sg2a8653tha2dpqj1.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBylgkiPLcCZQLuj7EB2BCDHfJGxeBMyvQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "238822026690-viefthvara5ijl5sg2a8653tha2dpqj1.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:238822026690:android:1e39c7064e2223764ffa5b",
+        "android_client_info": {
+          "package_name": "com.zmediaz.reedbarger"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "238822026690-hrekvnn85h0rmnndna93b1bbh9gqtjpe.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.zmediaz.reedbarger",
+            "certificate_hash": "e7c73c1ee8729950fc6dbc0d481dec8c6808559e"
+          }
+        },
+        {
+          "client_id": "238822026690-viefthvara5ijl5sg2a8653tha2dpqj1.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBylgkiPLcCZQLuj7EB2BCDHfJGxeBMyvQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "238822026690-viefthvara5ijl5sg2a8653tha2dpqj1.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
