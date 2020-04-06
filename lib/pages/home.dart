@@ -15,6 +15,11 @@ final GoogleSignIn googleSignIn = GoogleSignIn();
 class Home extends StatefulWidget {
   @override
   _HomeState createState() => _HomeState();
+
+  ///Logout
+  logout() {
+    googleSignIn.signOut();
+  }
 }
 
 class _HomeState extends State<Home> {
@@ -72,6 +77,7 @@ class _HomeState extends State<Home> {
     googleSignIn.signIn();
   }
 
+  ///Logout
   logout() {
     googleSignIn.signOut();
   }
