@@ -17,7 +17,7 @@ class _TimelineState extends State<Timeline> {
   @override
   void initState() {
     //This Here
-    createUser();
+    //createUser();
     //updateUser();
     //deleteData();
     super.initState();
@@ -57,13 +57,14 @@ class _TimelineState extends State<Timeline> {
     usersRef.document('asdfghjkl').delete();
   }
 
+  //TODO Here Lies The Issue
   @override
   Widget build(context) {
     return Scaffold(
       appBar: header(context, isAppTitle: true, titleText: 'Profile'),
       body: StreamBuilder<QuerySnapshot>(
-        stream: usersRef.snapshots(),
-        builder: (context, snapshot) {
+        stream: Firestore.instance.collection('users').snapshots(),
+        builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
           if (!snapshot.hasData) {
             return circularProgress();
           }
