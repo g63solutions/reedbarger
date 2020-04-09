@@ -9,9 +9,18 @@ import 'package:google_sign_in/google_sign_in.dart';
 GoogleSignIn googleSignIn = GoogleSignIn();
 Home home = Home();
 
-AppBar header(BuildContext context,
-    {bool isAppTitle = false, String titleText}) {
+AppBar header(
+  BuildContext context, {
+  bool isAppTitle = false,
+  String titleText,
+  //Giving It A Value Makes It Optional
+  removeBackButton = false,
+}) {
   return AppBar(
+    //automaticallyImplyLeading set to  false removes
+    // back button. So if remove backButton is true
+    // return false and remove it
+    automaticallyImplyLeading: removeBackButton ? false : true,
     title: Text(
       isAppTitle ? "FlutterShare" : titleText,
       style: TextStyle(

@@ -1,5 +1,7 @@
 //import 'dart:html';
 
+import 'dart:async';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttershare/widgets/header.dart';
@@ -12,20 +14,41 @@ class CreateAccount extends StatefulWidget {
 class _CreateAccountState extends State<CreateAccount> {
   //Needed For Forms
   final _formKey = GlobalKey<FormState>();
+  //SnackBar Display
+  final _scaffoldKey = GlobalKey<ScaffoldState>();
   String username;
 
   submit() {
+    final form = _formKey.currentState;
     //Saves every [FormField] that
     // is a descendant of this [Form] aka _formKey.
-    _formKey.currentState.save();
-    //Sends Username back
-    Navigator.pop(context, username);
+    if (form.validate()) {
+      form.save();
+      //SnackBar
+      SnackBar snackBar = SnackBar(
+        content: Text('Welcome $username'),
+      );
+      _scaffoldKey.currentState.showSnackBar(snackBar);
+      //Timer So That Page Doesn't disappear before SnackBar
+      Timer(
+        Duration(seconds: 2),
+        () {
+          //Sends Username back
+          Navigator.pop(context, username);
+        },
+      );
+    }
   }
 
   @override
   Widget build(BuildContext parentContext) {
     return Scaffold(
-      appBar: header(context, titleText: 'Set Up Your Profile'),
+      key: _scaffoldKey,
+      appBar: header(
+        context,
+        titleText: 'Set Up Your Profile',
+        removeBackButton: true,
+      ),
       body: ListView(
         children: <Widget>[
           Container(
@@ -45,7 +68,22 @@ class _CreateAccountState extends State<CreateAccount> {
                     // To It And The onSaved Value
                     child: Form(
                         key: _formKey,
+                        autovalidate: true,
                         child: TextFormField(
+                          validator: (val) {
+                            //Returns the string without any leading and
+                            // trailing whitespace. If the string
+                            // contains leading or trailing whitespace,
+                            // a new string with no leading and no trailing
+                            // whitespace is returned:
+                            if (val.trim().length < 3 || val.isEmpty) {
+                              return 'Username too short';
+                            } else if (val.trim().length > 16) {
+                              return 'Username Too Long';
+                            } else {
+                              return null;
+                            }
+                          },
                           onSaved: (val) => username = val,
                           decoration: InputDecoration(
                             border: OutlineInputBorder(),
@@ -60,17 +98,19 @@ class _CreateAccountState extends State<CreateAccount> {
                   onTap: submit,
                   child: Container(
                     height: 50,
-                    width: 350,
+                    width: 200,
                     decoration: BoxDecoration(
                       color: Colors.blue,
                       borderRadius: BorderRadius.circular(7.0),
                     ),
-                    child: Text(
-                      'Submit',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 15.0,
-                        fontWeight: FontWeight.bold,
+                    child: Center(
+                      child: Text(
+                        'Submit',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 15.0,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
                   ),

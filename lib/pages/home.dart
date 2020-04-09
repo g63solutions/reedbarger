@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttershare/models/user.dart';
 import 'package:fluttershare/pages/activity_feed.dart';
 import 'package:fluttershare/pages/create_account.dart';
 import 'package:fluttershare/pages/profile.dart';
@@ -16,8 +17,10 @@ import 'package:google_sign_in/google_sign_in.dart';
 final GoogleSignIn googleSignIn = GoogleSignIn();
 final FirebaseAuth _auth = FirebaseAuth.instance;
 //final userRef = Firestore.instance.collection('users');
-final userRef = Firestore.instance.collection('users');
+final usersRef = Firestore.instance.collection('users');
 final DateTime timestamp = DateTime.now();
+//Able To Pass User Data To All The Pages From Here
+User currentUser;
 
 class Home extends StatefulWidget {
   @override
@@ -80,7 +83,7 @@ class _HomeState extends State<Home> {
     // according to their ID
     //googleSignIn.currentUSer returns same info as account/GoogleSignIn
     final GoogleSignInAccount user = googleSignIn.currentUser;
-    final DocumentSnapshot doc = await userRef.document(user.id).get();
+    DocumentSnapshot doc = await usersRef.document(user.id).get();
 
     if (!doc.exists) {
       // 2) if the user doesn't exist, then we want to take them
@@ -96,7 +99,7 @@ class _HomeState extends State<Home> {
       // 3) get username from create account use
       // it to make new user document in users
       // collection with the user id as the document id
-      userRef.document(user.id).setData({
+      usersRef.document(user.id).setData({
         'id': user.id,
         'username': username,
         'photoUrl': user.photoUrl,
@@ -106,7 +109,15 @@ class _HomeState extends State<Home> {
         'timestamp': timestamp,
       });
       print('${user.id}');
+      //If Document Does Not Exist All These Variables Are
+      // Set In The Database. This Line Retrieves Those
+      // Documents and Stores The in A User Object.
+      doc = await usersRef.document(user.id).get();
     }
+    //DocumentSnapshot turned into user object.
+    currentUser = User.fromDocument(doc);
+    print(currentUser);
+    print(currentUser.username);
   }
 
   @override

@@ -61,7 +61,12 @@ class _TimelineState extends State<Timeline> {
   @override
   Widget build(context) {
     return Scaffold(
-      appBar: header(context, isAppTitle: true, titleText: 'Profile'),
+      appBar: header(
+        context,
+        isAppTitle: true,
+        titleText: 'Profile',
+        removeBackButton: false,
+      ),
       body: StreamBuilder<QuerySnapshot>(
         stream: Firestore.instance.collection('users').snapshots(),
         builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
