@@ -172,7 +172,7 @@ class _HomeState extends State<Home> {
         duration: Duration(milliseconds: 300), curve: Curves.bounceInOut);
   }
 
-  ///Page Controller Houses Pages
+  ///AuthScreen
   Widget buildAuthScreen() {
     return Scaffold(
       body: PageView(
@@ -218,6 +218,7 @@ class _HomeState extends State<Home> {
 
   ///Login Screen
   Scaffold buildUnAuthScreen() {
+    final Orientation orientation = MediaQuery.of(context).orientation;
     return Scaffold(
       body: Container(
         decoration: BoxDecoration(
@@ -238,7 +239,7 @@ class _HomeState extends State<Home> {
               'FlutterShare',
               style: TextStyle(
                 fontFamily: "Signatra",
-                fontSize: 90.0,
+                fontSize: orientation == Orientation.portrait ? 90.0 : 150.0,
                 color: Colors.white,
               ),
             ),
