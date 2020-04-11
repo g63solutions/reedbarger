@@ -108,7 +108,7 @@ class _HomeState extends State<Home> {
         'photoUrl': user.photoUrl,
         'email': user.email,
         'displayName': user.displayName,
-        'bio': '',
+        'bio': " ",
         'timestamp': timestamp,
       });
       print('${user.id}');
@@ -184,7 +184,9 @@ class _HomeState extends State<Home> {
           ActivityFeed(),
           Upload(currentUser: currentUser),
           Search(),
-          Profile(),
+          //currentUser?.id Null Aware Operator If Null
+          // Don't Pass It
+          Profile(profileId: currentUser?.id),
         ],
         //Controller To switch Between Pages
         controller: pageController,

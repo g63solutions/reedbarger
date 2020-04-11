@@ -9,13 +9,12 @@ import 'package:google_sign_in/google_sign_in.dart';
 GoogleSignIn googleSignIn = GoogleSignIn();
 Home home = Home();
 
-AppBar header(
-  BuildContext context, {
-  bool isAppTitle = false,
-  String titleText,
-  //Giving It A Value Makes It Optional
-  removeBackButton = false,
-}) {
+AppBar header(BuildContext context,
+    {bool isAppTitle = false,
+    String titleText,
+    //Giving It A Value Makes It Optional
+    removeBackButton = false,
+    removeLogoutButton = true}) {
   return AppBar(
     //automaticallyImplyLeading set to  false removes
     // back button. So if remove backButton is true
@@ -32,14 +31,16 @@ AppBar header(
     centerTitle: true,
     backgroundColor: Theme.of(context).primaryColor,
     actions: <Widget>[
-      IconButton(
-        icon: Icon(Icons.cancel),
-        tooltip: 'LOGOUT',
-        onPressed:
-            //logout,
-            //(){}
-            home.logout,
-      )
+      removeLogoutButton
+          ? Text('')
+          : IconButton(
+              icon: Icon(Icons.cancel),
+              tooltip: 'LOGOUT',
+              onPressed:
+                  //logout,
+                  //(){}
+                  home.logout,
+            )
     ],
   );
 }

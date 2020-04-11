@@ -66,6 +66,7 @@ class _TimelineState extends State<Timeline> {
         isAppTitle: true,
         titleText: 'Profile',
         removeBackButton: false,
+        removeLogoutButton: false,
       ),
       body: StreamBuilder<QuerySnapshot>(
         stream: Firestore.instance.collection('users').snapshots(),
