@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttershare/models/user.dart';
@@ -14,10 +15,12 @@ import 'package:fluttershare/pages/upload.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 //Reference Now We Can Use The Methods Login/Logout etc.
+//References Used To Access Firebase etc.
 final GoogleSignIn googleSignIn = GoogleSignIn();
+final StorageReference storageRef = FirebaseStorage.instance.ref();
 final FirebaseAuth _auth = FirebaseAuth.instance;
-//final userRef = Firestore.instance.collection('users');
 final usersRef = Firestore.instance.collection('users');
+final postsRef = Firestore.instance.collection('posts');
 final DateTime timestamp = DateTime.now();
 //Able To Pass User Data To All The Pages From Here
 User currentUser;
@@ -179,7 +182,7 @@ class _HomeState extends State<Home> {
         children: <Widget>[
           Timeline(),
           ActivityFeed(),
-          Upload(),
+          Upload(currentUser: currentUser),
           Search(),
           Profile(),
         ],
