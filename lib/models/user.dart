@@ -27,7 +27,7 @@ class User {
       username: doc['username'],
       photoUrl: doc['photoUrl'],
       displayName: doc['displayName'],
-      bio: doc['doc'],
+      bio: doc['bio'],
     );
   }
 }

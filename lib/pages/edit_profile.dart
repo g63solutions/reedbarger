@@ -16,6 +16,7 @@ class EditProfile extends StatefulWidget {
 }
 
 class _EditProfileState extends State<EditProfile> {
+  //_scaffoldKey for SnackBar
   final _scaffoldKey = GlobalKey<ScaffoldState>();
   TextEditingController displayNameController = TextEditingController();
   TextEditingController bioController = TextEditingController();
@@ -30,6 +31,7 @@ class _EditProfileState extends State<EditProfile> {
     getUser();
   }
 
+  ///Get User
   getUser() async {
     setState(() {
       isLoading = true;
@@ -44,6 +46,7 @@ class _EditProfileState extends State<EditProfile> {
     });
   }
 
+  ///Text Field Display Name
   Column buildDisplayNameField() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -66,6 +69,7 @@ class _EditProfileState extends State<EditProfile> {
     );
   }
 
+  ///Text Field Bio
   Column buildBioNameField() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -88,6 +92,7 @@ class _EditProfileState extends State<EditProfile> {
     );
   }
 
+  ///Profile Update
   updateProfileData() {
     setState(() {
       displayNameController.text.trim().length < 3 ||
@@ -104,7 +109,15 @@ class _EditProfileState extends State<EditProfile> {
         'displayName': displayNameController.text,
         'bio': bioController.text,
       });
+      SnackBar snackbar = SnackBar(content: Text('Profile Updated'));
+      _scaffoldKey.currentState.showSnackBar(snackbar);
     }
+  }
+
+  ///Logout
+  logout() async {
+    await googleSignIn.signOut();
+    Navigator.push(context, MaterialPageRoute(builder: (context) => Home()));
   }
 
   @override
@@ -174,7 +187,7 @@ class _EditProfileState extends State<EditProfile> {
                       Padding(
                         padding: EdgeInsets.all(16.0),
                         child: FlatButton.icon(
-                            onPressed: () => print('logout'),
+                            onPressed: logout,
                             icon: Icon(
                               Icons.cancel,
                               color: Colors.red,

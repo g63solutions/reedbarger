@@ -94,6 +94,8 @@ class _ProfileState extends State<Profile> {
   buildProfileHeader() {
     //Resolve Future Needed To Get User Info Based
     // On Their ID
+    //Resolves It Once Needs To Be Refreshed To See New data
+    //Should Be A Stream Builder Here
     return FutureBuilder(
       future: usersRef.document(widget.profileId).get(),
       //Resolve Value Available In Our Builder Function
@@ -157,7 +159,7 @@ class _ProfileState extends State<Profile> {
                 alignment: Alignment.centerLeft,
                 padding: EdgeInsets.only(top: 4.0),
                 child: Text(
-                  user.displayName,
+                  user.displayName ?? 'My Name',
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                   ),
@@ -166,6 +168,7 @@ class _ProfileState extends State<Profile> {
               Container(
                 alignment: Alignment.centerLeft,
                 padding: EdgeInsets.only(top: 2.0),
+                //child: Text(user.bio),
                 child: Text(user.bio ?? 'Work In Progress'),
               )
             ],

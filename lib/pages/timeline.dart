@@ -68,6 +68,7 @@ class _TimelineState extends State<Timeline> {
         removeBackButton: false,
         removeLogoutButton: false,
       ),
+      //Refreshes Instantly Unlike A Future Builder
       body: StreamBuilder<QuerySnapshot>(
         stream: Firestore.instance.collection('users').snapshots(),
         builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
