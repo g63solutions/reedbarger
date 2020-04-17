@@ -8,6 +8,7 @@ import 'package:fluttershare/pages/edit_profile.dart';
 import 'package:fluttershare/pages/home.dart';
 import 'package:fluttershare/widgets/header.dart';
 import 'package:fluttershare/widgets/post.dart';
+import 'package:fluttershare/widgets/post_tile.dart';
 import 'package:fluttershare/widgets/progress.dart';
 
 class Profile extends StatefulWidget {
@@ -22,6 +23,7 @@ class Profile extends StatefulWidget {
 class _ProfileState extends State<Profile> {
   //Profile page could be for any profile
   // this is the current user
+  //Same As (currentUser != null) ? currentUser.id : null
   final String currentUserId = currentUser?.id;
   bool isLoading = false;
   int postCount = 0;
@@ -36,7 +38,6 @@ class _ProfileState extends State<Profile> {
 
   getProfilePosts() async {
     setState(() {
-      print('Get Profile Post');
       isLoading = true;
     });
     QuerySnapshot snapshot = await postsRef
@@ -44,8 +45,7 @@ class _ProfileState extends State<Profile> {
         .collection('userPosts')
         .orderBy('timestamp', descending: true)
         .getDocuments();
-    print('${postsRef.id} PostRef ID');
-    print(snapshot.documents);
+
     setState(() {
       isLoading = false;
       postCount = snapshot.documents.length;
@@ -54,9 +54,9 @@ class _ProfileState extends State<Profile> {
       // snapshot with Post.fromDocument pass in doc to it
       // In the end call to list to make it a list
       posts = snapshot.documents.map((doc) => Post.fromDocument(doc)).toList();
-      print('Get Profile Post Finished Loading');
-      print(posts);
-      print(widget.profileId);
+      //Documents is a list of all the stuff in snapshot
+      //map goes over each document and returns 1 doc each
+      //each doc passed into factory and all are turned into a list
     });
   }
 
@@ -220,9 +220,29 @@ class _ProfileState extends State<Profile> {
     if (isLoading) {
       return circularProgress();
     }
-    return Column(
-      children: posts,
+    List<GridTile> gridTiles = [];
+    posts.forEach((post) {
+      gridTiles.add(
+        GridTile(
+          child: PostTile(
+            post: post,
+          ),
+        ),
+      );
+    });
+    return GridView.count(
+      crossAxisCount: 3,
+      childAspectRatio: 1,
+      mainAxisSpacing: 1.5,
+      crossAxisSpacing: 1.5,
+      shrinkWrap: true,
+      physics: NeverScrollableScrollPhysics(),
+      children: gridTiles,
     );
+
+//    return Column(
+//      children: posts,
+//    );
   }
 
   @override
