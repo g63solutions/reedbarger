@@ -1,4 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
@@ -6,6 +7,7 @@ import 'package:fluttershare/models/user.dart';
 import 'package:fluttershare/pages/edit_profile.dart';
 import 'package:fluttershare/pages/home.dart';
 import 'package:fluttershare/widgets/header.dart';
+import 'package:fluttershare/widgets/post.dart';
 import 'package:fluttershare/widgets/progress.dart';
 
 class Profile extends StatefulWidget {
@@ -21,6 +23,42 @@ class _ProfileState extends State<Profile> {
   //Profile page could be for any profile
   // this is the current user
   final String currentUserId = currentUser?.id;
+  bool isLoading = false;
+  int postCount = 0;
+  List<Post> posts = [];
+
+  @override
+  void initState() {
+    super.initState();
+    print('Profile Init');
+    getProfilePosts();
+  }
+
+  getProfilePosts() async {
+    setState(() {
+      print('Get Profile Post');
+      isLoading = true;
+    });
+    QuerySnapshot snapshot = await postsRef
+        .document(widget.profileId)
+        .collection('userPosts')
+        .orderBy('timestamp', descending: true)
+        .getDocuments();
+    print('${postsRef.id} PostRef ID');
+    print(snapshot.documents);
+    setState(() {
+      isLoading = false;
+      postCount = snapshot.documents.length;
+      //Iterate over snapshot.documents with map
+      //For each Doc deserialize post document
+      // snapshot with Post.fromDocument pass in doc to it
+      // In the end call to list to make it a list
+      posts = snapshot.documents.map((doc) => Post.fromDocument(doc)).toList();
+      print('Get Profile Post Finished Loading');
+      print(posts);
+      print(widget.profileId);
+    });
+  }
 
   buildCountColumn({String label, int count}) {
     return Column(
@@ -124,7 +162,7 @@ class _ProfileState extends State<Profile> {
                           mainAxisSize: MainAxisSize.max,
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: <Widget>[
-                            buildCountColumn(label: 'posts', count: 3),
+                            buildCountColumn(label: 'posts', count: postCount),
                             buildCountColumn(label: 'followers', count: 1),
                             buildCountColumn(label: 'following', count: 1),
                           ],
@@ -178,6 +216,15 @@ class _ProfileState extends State<Profile> {
     );
   }
 
+  buildProfilePosts() {
+    if (isLoading) {
+      return circularProgress();
+    }
+    return Column(
+      children: posts,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -188,6 +235,10 @@ class _ProfileState extends State<Profile> {
       body: ListView(
         children: <Widget>[
           buildProfileHeader(),
+          Divider(
+            height: 0.0,
+          ),
+          buildProfilePosts(),
         ],
       ),
     );

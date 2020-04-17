@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 //This Model Takes In A Snapshot And Returns A User Object
+//If this were a stateful widget this would be in the
+// widget location
 class User {
   final String id;
   final String username;
