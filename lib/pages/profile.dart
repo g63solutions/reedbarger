@@ -26,7 +26,7 @@ class _ProfileState extends State<Profile> {
   // this is the current user
   //Same As (currentUser != null) ? currentUser.id : null
   final String currentUserId = currentUser?.id;
-  String postOrientation = 'grid';
+  String postOrientation = 'list';
   bool isLoading = false;
   int postCount = 0;
   List<Post> posts = [];

@@ -19,9 +19,15 @@ import 'package:google_sign_in/google_sign_in.dart';
 final GoogleSignIn googleSignIn = GoogleSignIn();
 final StorageReference storageRef = FirebaseStorage.instance.ref();
 final FirebaseAuth _auth = FirebaseAuth.instance;
+//Path References In FireStore
 final usersRef = Firestore.instance.collection('users');
 final postsRef = Firestore.instance.collection('posts');
+final commentsRef = Firestore.instance.collection('comments');
+final activityFeedRef = Firestore.instance.collection('feed');
 final DateTime timestamp = DateTime.now();
+
+//ownerid not ownerId
+
 //Able To Pass User Data To All The Pages From Here
 User currentUser;
 
