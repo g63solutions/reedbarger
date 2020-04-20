@@ -80,6 +80,22 @@ class CommentsState extends State<Comments> {
       'avatarUrl': currentUser.photoUrl,
       'userId': currentUser.id,
     });
+    bool isNotPostOwner = postOwnerId != currentUser.id;
+    if (isNotPostOwner) {
+      //Add A Notification To Owners Activity Feed
+      activityFeedRef.document(postOwnerId).collection('feedItems').add({
+        'type': 'comment',
+        'commentData': commentController.text,
+        //User Who Liked The Post
+        'timestamp': timestamp,
+        'postId': postId,
+        'userId': currentUser.id,
+        'username': currentUser.username,
+        'userProfileImg': currentUser.photoUrl,
+        'mediaUrl': postMediaUrl,
+      });
+    }
+
     commentController.clear();
   }
 

@@ -176,14 +176,17 @@ class _PostState extends State<Post> {
 
   addLikeToActivityFeed() {
     //Don't add to feed if you like your own stuff
+    //isNotPostOwner Only Exists Here
     bool isNotPostOwner = currentUserId != ownerid;
     if (isNotPostOwner) {
       activityFeedRef
+          //Send Notification To THe Owner Of The Post
           .document(ownerid)
           .collection('feedItems')
           .document(postId)
           .setData({
         'type': 'like',
+        //User Who Liked The Post
         'username': currentUser.username,
         'userId': currentUser.id,
         'userProfileImg': currentUser.photoUrl,
@@ -202,6 +205,7 @@ class _PostState extends State<Post> {
           .collection('feedItems')
           .document(postId)
           .get()
+          //Whatever Comes From Get Is Sent To Then And Named doc
           .then((doc) {
         if (doc.exists) {
           doc.reference.delete();
