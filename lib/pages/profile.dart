@@ -128,6 +128,8 @@ class _ProfileState extends State<Profile> {
     bool isProfileOwner = currentUserId == widget.profileId;
     if (isProfileOwner) {
       return buildButton(text: 'Edit Profile', function: editProfile);
+    } else {
+      return Text('');
     }
   }
 
@@ -209,7 +211,10 @@ class _ProfileState extends State<Profile> {
                 alignment: Alignment.centerLeft,
                 padding: EdgeInsets.only(top: 2.0),
                 //child: Text(user.bio),
-                child: Text(user.bio ?? 'Work In Progress'),
+                child: Text(
+                  user.bio ?? 'Work In Progress',
+                  style: TextStyle(color: Theme.of(context).primaryColor),
+                ),
               )
             ],
           ),

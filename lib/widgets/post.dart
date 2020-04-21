@@ -5,6 +5,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttershare/models/user.dart';
+import 'package:fluttershare/pages/activity_feed.dart';
 import 'package:fluttershare/pages/comments.dart';
 import 'package:fluttershare/pages/home.dart';
 import 'package:fluttershare/widgets/custom_image.dart';
@@ -115,7 +116,7 @@ class _PostState extends State<Post> {
                 backgroundColor: Colors.grey,
               ),
               title: GestureDetector(
-                onTap: () => print('Showing Profile'),
+                onTap: () => showProfile(context, profileId: user.id),
                 child: Text(
                   user.username,
                   style: TextStyle(
