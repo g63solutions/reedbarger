@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttershare/pages/home.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -27,6 +28,7 @@ AppBar header(BuildContext context,
         fontFamily: isAppTitle ? 'Signatra' : '',
         fontSize: isAppTitle ? 50.0 : 22.0,
       ),
+      overflow: TextOverflow.ellipsis,
     ),
     centerTitle: true,
     backgroundColor: Theme.of(context).primaryColor,
