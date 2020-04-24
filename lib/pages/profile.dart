@@ -26,9 +26,12 @@ class _ProfileState extends State<Profile> {
   // this is the current user
   //Same As (currentUser != null) ? currentUser.id : null
   final String currentUserId = currentUser?.id;
+  bool isFollowing = false;
   String postOrientation = 'list';
   bool isLoading = false;
   int postCount = 0;
+  int followerCount = 0;
+  int followingCount = 0;
   List<Post> posts = [];
 
   @override
@@ -36,6 +39,41 @@ class _ProfileState extends State<Profile> {
     super.initState();
     print('Profile Init');
     getProfilePosts();
+    getFollowers();
+    getFollowing();
+    checkIfFollowing();
+  }
+
+  //If Doc Exist You are Following if null doc.exists is false
+  checkIfFollowing() async {
+    DocumentSnapshot doc = await followersRef
+        .document(widget.profileId)
+        .collection('userFollowers')
+        .document(currentUserId)
+        .get();
+    setState(() {
+      isFollowing = doc.exists;
+    });
+  }
+
+  getFollowers() async {
+    QuerySnapshot snapshot = await followersRef
+        .document(widget.profileId)
+        .collection('userFollowers')
+        .getDocuments();
+    setState(() {
+      followerCount = snapshot.documents.length;
+    });
+  }
+
+  getFollowing() async {
+    QuerySnapshot snapshot = await followingRef
+        .document(widget.profileId)
+        .collection('userFollowing')
+        .getDocuments();
+    setState(() {
+      followingCount = snapshot.documents.length;
+    });
   }
 
   getProfilePosts() async {
@@ -107,15 +145,15 @@ class _ProfileState extends State<Profile> {
             child: Text(
               text,
               style: TextStyle(
-                color: Colors.white,
+                color: isFollowing ? Colors.black : Colors.white,
                 fontWeight: FontWeight.bold,
               ),
             ),
             alignment: Alignment.center,
             decoration: BoxDecoration(
-              color: Colors.blue,
+              color: isFollowing ? Colors.white : Colors.blue,
               border: Border.all(
-                color: Colors.blue,
+                color: isFollowing ? Colors.grey : Colors.blue,
               ),
               borderRadius: BorderRadius.circular(5.0),
             ),
@@ -128,9 +166,97 @@ class _ProfileState extends State<Profile> {
     bool isProfileOwner = currentUserId == widget.profileId;
     if (isProfileOwner) {
       return buildButton(text: 'Edit Profile', function: editProfile);
-    } else {
-      return Text('');
+    } else if (isFollowing) {
+      return buildButton(
+        text: 'Unfollow',
+        function: handleUnfollowUser,
+      );
+    } else if (!isFollowing) {
+      return buildButton(
+        text: 'Follow',
+        function: handleFollowUser,
+      );
     }
+  }
+
+  handleUnfollowUser() {
+    setState(() {
+      isFollowing = false;
+    });
+    //remove follower
+    followersRef
+        .document(widget.profileId)
+        .collection('userFollowers')
+        .document(currentUserId)
+        //doc is a document snapshot
+        .get()
+        .then((doc) {
+      if (doc.exists) {
+        //reference is the reference that produced
+        // the snapshot doc
+        doc.reference.delete();
+      }
+    });
+    //remove following
+    followingRef
+        .document(currentUserId)
+        .collection('userFollowing')
+        .document(widget.profileId)
+        .get()
+        .then((doc) {
+      if (doc.exists) {
+        //reference is the reference that produced
+        // the snapshot doc
+        doc.reference.delete();
+      }
+    });
+    //Delete activity feed item
+    activityFeedRef
+        .document(widget.profileId)
+        .collection('feedItems')
+        .document(currentUserId)
+        .get()
+        .then((doc) {
+      if (doc.exists) {
+        //reference is the reference that produced
+        // the snapshot doc
+        doc.reference.delete();
+      }
+    });
+  }
+
+  handleFollowUser() {
+    setState(() {
+      isFollowing = true;
+    });
+    //Make Auth User Follower Of That User
+    // (Update Their Followers Collection)
+    followersRef
+        .document(widget.profileId)
+        .collection('userFollowers')
+        .document(currentUserId)
+        .setData({});
+    //Put that user on your following collection (Update
+    //your following collection)
+    followingRef
+        .document(currentUserId)
+        .collection('userFollowing')
+        .document(widget.profileId)
+        .setData({});
+    //add activity feed item for tht user to notify about
+    // new follower (us)
+    activityFeedRef
+        .document(widget.profileId)
+        .collection('feedItems')
+        .document(currentUserId)
+        .setData({
+      'type': 'follow',
+      'ownerId': widget.profileId,
+      'username': currentUser.username,
+      'userId': currentUserId,
+      'userProfileImg': currentUser.photoUrl,
+      'timestamp': timestamp,
+    });
   }
 
   buildProfileHeader() {
@@ -167,8 +293,10 @@ class _ProfileState extends State<Profile> {
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: <Widget>[
                             buildCountColumn(label: 'posts', count: postCount),
-                            buildCountColumn(label: 'followers', count: 1),
-                            buildCountColumn(label: 'following', count: 1),
+                            buildCountColumn(
+                                label: 'followers', count: followerCount),
+                            buildCountColumn(
+                                label: 'following', count: followingCount),
                           ],
                         ),
                         Row(
@@ -242,7 +370,7 @@ class _ProfileState extends State<Profile> {
                   fontWeight: FontWeight.bold,
                 ),
               ),
-            )
+            ),
           ],
         ),
       );
@@ -296,7 +424,7 @@ class _ProfileState extends State<Profile> {
           color: postOrientation == 'list'
               ? Theme.of(context).primaryColor
               : Colors.grey,
-        )
+        ),
       ],
     );
   }
@@ -304,10 +432,7 @@ class _ProfileState extends State<Profile> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: header(
-        context,
-        titleText: 'Profile',
-      ),
+      appBar: header(context, titleText: 'Profile'),
       body: ListView(
         children: <Widget>[
           buildProfileHeader(),
