@@ -135,13 +135,13 @@ class ActivityFeedItem extends StatelessWidget {
       mediaPreview = Text('');
     }
     if (type == 'like') {
-      activityItemText = 'Liked Your Post';
-    } else if (type == 'folow') {
-      activityItemText = 'Is Following You';
+      activityItemText = ' Liked Your Post';
+    } else if (type == 'follow') {
+      activityItemText = ' Is Following You';
     } else if (type == 'comment') {
-      activityItemText = 'replied: $commentData';
+      activityItemText = ' Replied: $commentData';
     } else {
-      activityItemText = "Error: Unknown type '$type'";
+      activityItemText = " Error: Unknown type '$type'";
     }
   }
 
