@@ -112,7 +112,8 @@ class _HomeState extends State<Home> {
       // collection with the user id as the document id
       usersRef.document(user.id).setData({
         'id': user.id,
-        'username': username,
+        //If A User Backs Out It Will Create An Error == Null
+        'username': username ?? 'John Doe',
         'photoUrl': user.photoUrl,
         'email': user.email,
         'displayName': user.displayName,
