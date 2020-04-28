@@ -1,3 +1,5 @@
+//Stuff You Need ForTHe App To Run
+//require('This Is A Package')
 const functions = require('firebase-functions');
 const admin = require('firebase-admin');
 admin.initializeApp();
@@ -8,11 +10,11 @@ admin.initializeApp();
 //  response.send("Hello from Firebase!");
 // });
 
+
 //This Is The Trigger
 exports.onCreateFollower = functions.firestore
     .document('/followers/{userId}/userFollowers/{followerId}')
     .onCreate(async (snapshot, context) => {
-//After onCreate get the userId & followerId from context.params
         console.log('Follower Created', snapshot.id);
         const userId = context.params.userId;
         const followerId = context.params.followerId;
@@ -26,7 +28,6 @@ exports.onCreateFollower = functions.firestore
         .collection('posts')
         .doc(userId)
         .collection('userPosts');
-
 
 // 2) Create  Following Users Timeline Ref
         const timelinePostsRef = admin
@@ -50,6 +51,4 @@ querySnapshot.forEach(doc => {
         timelinePostsRef.doc(postId).set(postData);
     }
 })
-
-
 });
