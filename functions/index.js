@@ -104,7 +104,7 @@ exports.onDeleteFollower = functions.firestore
             .collection('timeline')
             .doc(followerId)
             .collection('timelinePosts')
-            .where('ownerId', '==', userId);
+            .where('ownerid', '==', userId);
 
         const querySnapshot = await timelinePostsRef.get();
         querySnapshot.forEach(doc => {
