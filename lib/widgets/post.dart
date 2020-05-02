@@ -108,6 +108,7 @@ class _PostState extends State<Post> {
             return circularProgress();
           }
           User user = User.fromDocument(snapshot.data);
+          bool isPostOwner = currentUserId == ownerid;
           return Padding(
             padding: const EdgeInsets.only(top: 15.0),
             child: ListTile(
@@ -126,15 +127,83 @@ class _PostState extends State<Post> {
                 ),
               ),
               subtitle: Text(location),
-              trailing: IconButton(
-                onPressed: () => print('Deleting Post'),
-                icon: Icon(
-                  Icons.more_vert,
-                ),
-              ),
+              //See If You Are The Post Ower
+              trailing: isPostOwner
+                  ? IconButton(
+                      //Passed In Context Since Modal Needs Context
+                      onPressed: () => handleDeletePost(context),
+                      icon: Icon(
+                        Icons.more_vert,
+                      ),
+                    )
+                  : Text(''),
             ),
           );
         });
+  }
+
+  handleDeletePost(BuildContext parentContext) {
+    return showDialog(
+        context: parentContext,
+        builder: (context) {
+          return SimpleDialog(
+            title: Text('Remove The Post?'),
+            children: <Widget>[
+              SimpleDialogOption(
+                onPressed: () {
+                  Navigator.pop(context);
+                  deletePost();
+                },
+                child: Text(
+                  'Delete',
+                  style: TextStyle(color: Colors.red),
+                ),
+              ),
+              SimpleDialogOption(
+                onPressed: () => Navigator.pop(context),
+                child: Text('Cancel'),
+              )
+            ],
+          );
+        });
+  }
+
+  deletePost() async {
+    //Delete Post
+    postsRef
+        .document(ownerid)
+        .collection('userPosts')
+        .document(postId)
+//You Can Call Delete Here Yet You Should Make Sure It Exists First
+        .get()
+        .then((doc) {
+      if (doc.exists) {
+        doc.reference.delete();
+      }
+    });
+//Delete Uploaded Image From Post
+    storageRef.child('post_$postId.jpg').delete();
+//Then Delete All Activity Feed Notifications
+    QuerySnapshot activityFeedSnapshot = await activityFeedRef
+        .document(ownerid)
+        .collection('feedItems')
+        .where('postId', isEqualTo: postId)
+        .getDocuments();
+    activityFeedSnapshot.documents.forEach((doc) {
+      if (doc.exists) {
+        doc.reference.delete();
+      }
+    });
+//Then Delete All Comments
+    QuerySnapshot commentsSnapshot = await commentsRef
+        .document(postId)
+        .collection('comments')
+        .getDocuments();
+    commentsSnapshot.documents.forEach((doc) {
+      if (doc.exists) {
+        doc.reference.delete();
+      }
+    });
   }
 
   handleLikePost() {
