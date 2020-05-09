@@ -31,7 +31,22 @@ class _ActivityFeedState extends State<ActivityFeed> {
     snapshot.documents.forEach((doc) {
       print('Activity Feed Item: ${doc.data}');
     });
+    print('Activity Feed Items Length ${feedItems.length}');
     return feedItems;
+  }
+
+  Widget emptyActivityFeed() {
+    return Center(
+      child: Container(
+        child: Text(
+          'No Activity Just Yet',
+          style: TextStyle(
+            fontSize: 30,
+            color: Colors.red,
+          ),
+        ),
+      ),
+    );
   }
 
   @override
@@ -39,20 +54,46 @@ class _ActivityFeedState extends State<ActivityFeed> {
     return Scaffold(
       backgroundColor: Colors.black12,
       appBar: header(context, titleText: 'Activity Feed'),
-      body: Container(
-        child: FutureBuilder(
-          //Future Is A FireStore Query
-          future: getActivityFeed(),
-          builder: (context, snapshot) {
+      body: StreamBuilder<QuerySnapshot>(
+          stream: activityFeedRef
+              .document(currentUser.id)
+              .collection('feedItems')
+              .orderBy('timestamp', descending: true)
+              .snapshots(),
+          builder:
+              (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
             if (!snapshot.hasData) {
               return circularProgress();
             }
-            return ListView(
-              children: snapshot.data,
+            List<ActivityFeedItem> feedItems = [];
+            snapshot.data.documents.forEach((doc) {
+              feedItems.add(ActivityFeedItem.fromDocument(doc));
+            });
+
+            return Container(
+              child: feedItems.length > 0
+                  ? ListView(
+                      children: feedItems,
+                    )
+                  : emptyActivityFeed(),
             );
-          },
-        ),
-      ),
+          }),
+//      body: Container(
+//        child: FutureBuilder(
+//          //Future Is A FireStore Query
+//          future: getActivityFeed(),
+//          builder: (context, snapshot) {
+//            if (!snapshot.hasData) {
+//              return circularProgress();
+//            } else if (snapshot == null) {
+//              emptyActivityFeed();
+//            }
+//            return ListView(
+//              children: snapshot.data,
+//            );
+//          },
+//        ),
+//      ),
     );
   }
 }
@@ -98,12 +139,13 @@ class ActivityFeedItem extends StatelessWidget {
   }
 
   showPost(context) {
+    print('Activity Feed Post Id $postId');
     Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) => PostScreen(
           postId: postId,
-          userId: userId,
+          userId: currentUser.id,
         ),
       ),
     );
@@ -174,8 +216,11 @@ class ActivityFeedItem extends StatelessWidget {
                       )
                     ])),
           ),
-          leading: CircleAvatar(
-            backgroundImage: CachedNetworkImageProvider(userProfileImg),
+          leading: GestureDetector(
+            onTap: () => showProfile(context, profileId: userId),
+            child: CircleAvatar(
+              backgroundImage: CachedNetworkImageProvider(userProfileImg),
+            ),
           ),
           subtitle: Text(
             timeago.format(

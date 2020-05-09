@@ -21,6 +21,8 @@ class Timeline extends StatefulWidget {
 class _TimelineState extends State<Timeline> {
   List<Post> posts;
 
+  String currentUser;
+
   List<dynamic> users = [];
 
   @override
@@ -30,21 +32,8 @@ class _TimelineState extends State<Timeline> {
     //updateUser();
     //deleteData();
     super.initState();
-    getTimeline();
-  }
-
-  //Fetching Users Timeline
-  getTimeline() async {
-    QuerySnapshot snapshot = await timelineRef
-        .document(widget.currentUser.id)
-        .collection('timelinePosts')
-        .orderBy('timestamp', descending: true)
-        .getDocuments();
-    List<Post> posts =
-        snapshot.documents.map((doc) => Post.fromDocument(doc)).toList();
-    setState(() {
-      this.posts = posts;
-    });
+    //getCurrentUser();
+    //getTimeline();
   }
 
   createUser() {
@@ -91,14 +80,88 @@ class _TimelineState extends State<Timeline> {
     }
   }
 
-  //TODO Here Lies The Issue
+  //Fetching Users Timeline
+  getTimeline() async {
+    QuerySnapshot snapshot = await timelineRef
+        .document(widget.currentUser.id)
+        //.document(currentUser)
+        .collection('timelinePosts')
+        .orderBy('timestamp', descending: true)
+        .getDocuments();
+    List<Post> posts =
+        snapshot.documents.map((doc) => Post.fromDocument(doc)).toList();
+    setState(() {
+      this.posts = posts;
+    });
+  }
+
+//  //TODO Here Lies The Issue
+//  @override
+//  Widget build(context) {
+//    return Scaffold(
+//      appBar: header(context, isAppTitle: true),
+//      body: RefreshIndicator(
+//        onRefresh: () => getTimeline(),
+//        child: buildTimeline(),
+//      ),
+//    );
+//  }
+
+  Widget notFollowingMethod() {
+    return Center(
+      child: Container(
+        child: Text(
+          'Not Following Anyone',
+          style: TextStyle(
+            fontSize: 30,
+            color: Colors.red,
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(context) {
     return Scaffold(
-      appBar: header(context, isAppTitle: true),
-      body: RefreshIndicator(
-        onRefresh: () => getTimeline(),
-        child: buildTimeline(),
+      appBar: header(
+        context,
+        isAppTitle: true,
+        titleText: 'Time Lizzo',
+        removeBackButton: false,
+        removeLogoutButton: false,
+      ),
+      //Refreshes Instantly Unlike A Future Builder
+      body: StreamBuilder<QuerySnapshot>(
+        stream: timelineRef
+            .document(widget.currentUser?.id)
+            .collection('timelinePosts')
+            .orderBy('timestamp', descending: true)
+            .snapshots(),
+        builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+          if (!snapshot.hasData) {
+            return circularProgress();
+          }
+
+//        List<Post> childrensss =
+//        snapshot.documents.map((doc) => Post.fromDocument(doc)).toList();
+//        setState(() {
+//          this.posts = posts;
+//        });
+
+          final List<Post> children = snapshot.data.documents
+              //get each doc and get username
+              .map((doc) => Post.fromDocument(doc))
+              .toList();
+          print('children.length ${children.length}');
+          return Container(
+            child: children.length > 0
+                ? ListView(
+                    children: children,
+                  )
+                : notFollowingMethod(),
+          );
+        },
       ),
     );
   }
