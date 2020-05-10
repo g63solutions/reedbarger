@@ -74,9 +74,10 @@ class _HomeState extends State<Home> {
     });
   }
 
-  handleSignIn({GoogleSignInAccount account}) {
+  handleSignIn({GoogleSignInAccount account}) async {
     if (account != null) {
-      createUserInFirestore();
+      //Await has to be used if you call an ASYNC FUNCTION
+      await createUserInFirestore();
       print('Google Sign In Account Info => $account');
       setState(() {
         print('isAuth = true');
@@ -90,6 +91,7 @@ class _HomeState extends State<Home> {
     }
   }
 
+  //Whenever This Is Called You Need To Use ASYNC ans AWAIT
   createUserInFirestore() async {
     // 1) Check if user exists in users collections in database
     // according to their ID

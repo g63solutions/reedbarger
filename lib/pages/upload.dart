@@ -22,7 +22,9 @@ class Upload extends StatefulWidget {
   _UploadState createState() => _UploadState();
 }
 
-class _UploadState extends State<Upload> {
+//AutomaticKeepAliveClientMixin Requirement #1
+class _UploadState extends State<Upload>
+    with AutomaticKeepAliveClientMixin<Upload> {
   TextEditingController locationController = TextEditingController();
   TextEditingController captionController = TextEditingController();
   //Once This File Is Not Null And Is In State
@@ -71,7 +73,10 @@ class _UploadState extends State<Upload> {
               onPressed: () => handleChooseFromGallery(context),
             ),
             SimpleDialogOption(
-              child: Text('Cancel'),
+              child: Text(
+                'Cancel',
+                style: TextStyle(color: Colors.red),
+              ),
               onPressed: () => Navigator.pop(context),
             )
           ],
@@ -309,8 +314,13 @@ class _UploadState extends State<Upload> {
     locationController.text = formattedAddress;
   }
 
+  //AutomaticKeepAliveClientMixin Requirement #2
+  bool get wantKeepAlive => true;
+
   @override
   Widget build(BuildContext context) {
+    //AutomaticKeepAliveClientMixin Requirement #3
+    super.build(context);
     return file == null ? buildSplashScreen() : buildUploadForm();
   }
 }

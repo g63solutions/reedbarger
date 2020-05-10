@@ -59,13 +59,19 @@ class _ActivityFeedState extends State<ActivityFeed> {
               .document(currentUser.id)
               .collection('feedItems')
               .orderBy('timestamp', descending: true)
+              .limit(20)
               .snapshots(),
           builder:
               (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
             if (!snapshot.hasData) {
               return circularProgress();
             }
+            //You Will Use ActivityFeedItem.fromDocument So You Need A
+            // List Of ActivityFeedItem
             List<ActivityFeedItem> feedItems = [];
+            //DATA latest data received by the asynchronous computation (Snapshot)
+            //DOCUMENTS Gets a list of all the documents included in this snapshot
+            //Each Document made into ActivityFeedItem and saved to list
             snapshot.data.documents.forEach((doc) {
               feedItems.add(ActivityFeedItem.fromDocument(doc));
             });
@@ -103,6 +109,10 @@ Widget mediaPreview;
 String activityItemText;
 
 //Model
+
+//This is the feed items that is displayed and it also
+// maps the document snapshot.
+//The Build is how it is displayed. All You Have TO Do Is pAss It To THe ListView
 class ActivityFeedItem extends StatelessWidget {
   final String username;
   final String userId;
