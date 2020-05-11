@@ -55,51 +55,35 @@ class _ActivityFeedState extends State<ActivityFeed> {
       backgroundColor: Colors.black12,
       appBar: header(context, titleText: 'Activity Feed'),
       body: StreamBuilder<QuerySnapshot>(
-          stream: activityFeedRef
-              .document(currentUser.id)
-              .collection('feedItems')
-              .orderBy('timestamp', descending: true)
-              .limit(20)
-              .snapshots(),
-          builder:
-              (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-            if (!snapshot.hasData) {
-              return circularProgress();
-            }
-            //You Will Use ActivityFeedItem.fromDocument So You Need A
-            // List Of ActivityFeedItem
-            List<ActivityFeedItem> feedItems = [];
-            //DATA latest data received by the asynchronous computation (Snapshot)
-            //DOCUMENTS Gets a list of all the documents included in this snapshot
-            //Each Document made into ActivityFeedItem and saved to list
-            snapshot.data.documents.forEach((doc) {
-              feedItems.add(ActivityFeedItem.fromDocument(doc));
-            });
+        stream: activityFeedRef
+            .document(currentUser.id)
+            .collection('feedItems')
+            .orderBy('timestamp', descending: true)
+            .limit(20)
+            .snapshots(),
+        builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+          if (!snapshot.hasData) {
+            return circularProgress();
+          }
+          //You Will Use ActivityFeedItem.fromDocument So You Need A
+          // List Of ActivityFeedItem
+          List<ActivityFeedItem> feedItems = [];
+          //DATA latest data received by the asynchronous computation (Snapshot)
+          //DOCUMENTS Gets a list of all the documents included in this snapshot
+          //Each Document made into ActivityFeedItem and saved to list
+          snapshot.data.documents.forEach((doc) {
+            feedItems.add(ActivityFeedItem.fromDocument(doc));
+          });
 
-            return Container(
-              child: feedItems.length > 0
-                  ? ListView(
-                      children: feedItems,
-                    )
-                  : emptyActivityFeed(),
-            );
-          }),
-//      body: Container(
-//        child: FutureBuilder(
-//          //Future Is A FireStore Query
-//          future: getActivityFeed(),
-//          builder: (context, snapshot) {
-//            if (!snapshot.hasData) {
-//              return circularProgress();
-//            } else if (snapshot == null) {
-//              emptyActivityFeed();
-//            }
-//            return ListView(
-//              children: snapshot.data,
-//            );
-//          },
-//        ),
-//      ),
+          return Container(
+            child: feedItems.length > 0
+                ? ListView(
+                    children: feedItems,
+                  )
+                : emptyActivityFeed(),
+          );
+        },
+      ),
     );
   }
 }

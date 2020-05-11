@@ -38,7 +38,7 @@ class _TimelineState extends State<Timeline> {
   }
 
   @override
-  Widget build(context) {
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: header(
         context,
@@ -55,22 +55,27 @@ class _TimelineState extends State<Timeline> {
         //initialData: null,
         stream: timelineRef
             .document(widget.currentUser.id)
-//                  .document(widget.currentUser?.id)
             .collection('timelinePosts')
             .orderBy('timestamp', descending: true)
             .snapshots(),
         builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
           if (!snapshot.hasData) {
             return circularProgress();
-          } else if (snapshot == null) {
-            return circularProgress();
           }
+//          else if (snapshot == null) {
+//            return circularProgress();
+//          }
+          List<Post> children = [];
+          snapshot.data.documents.forEach((doc) {
+            children.add(Post.fromDocument(doc));
+          });
 
-          final List<Post> children = snapshot.data.documents
-              //get each doc and get username
-              .map((doc) => Post.fromDocument(doc))
-              .toList();
-          print('children.length ${children.length}');
+//          List<Post> children = snapshot.data.documents
+//              //final List<Post> children = snapshot.data.documents
+//              //get each doc and get username
+//              .map((doc) => Post.fromDocument(doc))
+//              .toList();
+          //print('children.length ${children.length}');
           return Container(
             child: children.length > 0
                 ? ListView(
