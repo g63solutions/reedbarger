@@ -1,7 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttershare/models/user.dart';
 import 'package:fluttershare/pages/home.dart';
+import 'package:fluttershare/pages/search.dart';
 import 'package:fluttershare/widgets/header.dart';
 import 'package:fluttershare/widgets/post.dart';
 import 'package:fluttershare/widgets/progress.dart';
@@ -19,22 +21,110 @@ class Timeline extends StatefulWidget {
 }
 
 class _TimelineState extends State<Timeline> {
+  @override
+  void initState() {
+    super.initState();
+    getFollowing();
+  }
+
+  //Used To Save A List To Use Elsewhere In Program Used With SetState
+  List<String> followingList = [];
   List<Post> posts;
 
   List<dynamic> users = [];
 
   notFollowingMethod() {
-    return Center(
-      child: Container(
-        child: Text(
-          'Not Following Anyone',
-          style: TextStyle(
-            fontSize: 30,
-            color: Colors.red,
+    return StreamBuilder(
+      stream:
+          usersRef.orderBy('timestamp', descending: true).limit(30).snapshots(),
+      builder: (context, snapshot) {
+        if (!snapshot.hasData) {
+          return circularProgress();
+        }
+        List<UserResult> userResults = [];
+        //ForEach Loop Everything in it is done once
+        snapshot.data.documents.forEach((doc) {
+          //Take snapshot and return 1 User Object
+          User user = User.fromDocument(doc);
+          //Check if your user profile comes up so You don't add yourself
+          final bool isAuthUser = currentUser.id == user.id;
+          //Check you are not already following the person
+          final bool isFollowingUser = followingList.contains(user.id);
+          //Remove AuthUser from recommended list if true
+          if (isAuthUser) {
+            return;
+          } else if (isFollowingUser) {
+            return;
+          } else {
+            UserResult userResult = UserResult(user);
+            userResults.add(userResult);
+          }
+        });
+        return Container(
+          color: Theme.of(context).accentColor.withOpacity(0.2),
+          child: Column(
+            children: <Widget>[
+              Container(
+                padding: EdgeInsets.all(12.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Icon(
+                      Icons.person_add,
+                      color: Theme.of(context).primaryColor,
+                      size: 30.0,
+                    ),
+                    SizedBox(
+                      width: 8.0,
+                    ),
+                    Text(
+                      'Users To Follow',
+                      style: TextStyle(
+                        color: Theme.of(context).primaryColor,
+                        fontSize: 30.0,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              //Column(children: userResults)
+              Expanded(
+                child: ListView(
+                  children: userResults,
+                ),
+              )
+            ],
           ),
-        ),
-      ),
+        );
+      },
     );
+    // This line at the very end after the last `if` statement
+    // if You get needs a return cause return type is container
+    // return Center(child: Text('Data unavailable'));
+  }
+
+//    return Center(
+//      child: Container(
+//        child: Text(
+//          'Not Following Anyone',
+//          style: TextStyle(
+//            fontSize: 30,
+//            color: Colors.red,
+//          ),
+//        ),
+//      ),
+//    );
+
+  getFollowing() async {
+    QuerySnapshot snapshot = await followingRef
+        .document(currentUser.id)
+        .collection('userFollowing')
+        .getDocuments();
+    //SetState Is Used To Save Ish To Defined Variables On Top
+    setState(() {
+      //Gets Document Id Field Of Each UserFollowing Document Which Is A User Id
+      followingList = snapshot.documents.map((doc) => doc.documentID).toList();
+    });
   }
 
   @override
@@ -76,6 +166,7 @@ class _TimelineState extends State<Timeline> {
 //              .map((doc) => Post.fromDocument(doc))
 //              .toList();
           //print('children.length ${children.length}');
+
           return Container(
             child: children.length > 0
                 ? ListView(
