@@ -90,6 +90,7 @@ class _TimelineState extends State<Timeline> {
               //Column(children: userResults)
               Expanded(
                 child: ListView(
+                  scrollDirection: Axis.vertical,
                   children: userResults,
                 ),
               )
@@ -98,22 +99,7 @@ class _TimelineState extends State<Timeline> {
         );
       },
     );
-    // This line at the very end after the last `if` statement
-    // if You get needs a return cause return type is container
-    // return Center(child: Text('Data unavailable'));
   }
-
-//    return Center(
-//      child: Container(
-//        child: Text(
-//          'Not Following Anyone',
-//          style: TextStyle(
-//            fontSize: 30,
-//            color: Colors.red,
-//          ),
-//        ),
-//      ),
-//    );
 
   getFollowing() async {
     QuerySnapshot snapshot = await followingRef
@@ -122,7 +108,8 @@ class _TimelineState extends State<Timeline> {
         .getDocuments();
     //SetState Is Used To Save Ish To Defined Variables On Top
     setState(() {
-      //Gets Document Id Field Of Each UserFollowing Document Which Is A User Id
+      //Gets Document Id Field Of Each UserFollowing Document Which
+      // Is A User Id
       followingList = snapshot.documents.map((doc) => doc.documentID).toList();
     });
   }

@@ -127,6 +127,14 @@ class _HomeState extends State<Home> {
       //If Document Does Not Exist All These Variables Are
       // Set In The Database. This Line Retrieves Those
       // Documents and Stores The in A User Object.
+
+      //Make user their own follower(to include their posts in their timeline)
+      await followersRef
+          .document(user.id)
+          .collection('userFollowers')
+          .document(user.id)
+          .setData({});
+
       doc = await usersRef.document(user.id).get();
     }
     //DocumentSnapshot turned into user object.
