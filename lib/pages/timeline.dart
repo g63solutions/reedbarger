@@ -90,7 +90,6 @@ class _TimelineState extends State<Timeline> {
               //Column(children: userResults)
               Expanded(
                 child: ListView(
-                  scrollDirection: Axis.vertical,
                   children: userResults,
                 ),
               )
