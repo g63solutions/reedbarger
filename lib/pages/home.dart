@@ -1,7 +1,9 @@
 import 'dart:developer';
+import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -45,6 +47,10 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
+  //FireBaseMessaging Stuff
+  // With The Key _scaffoldKey.currentState.showSnackbar();
+  final _scaffoldKey = GlobalKey<ScaffoldState>();
+  FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
   bool isAuth = false;
   //Make Sure To Dispose When Not On The HomePage
   PageController pageController;
@@ -83,12 +89,54 @@ class _HomeState extends State<Home> {
         print('isAuth = true');
         isAuth = true;
       });
+      configurePushNotifications();
     } else {
       setState(() {
         print('isAuth = false');
         isAuth = false;
       });
     }
+  }
+
+  configurePushNotifications() {
+    //Get User
+    final GoogleSignInAccount user = googleSignIn.currentUser;
+    if (Platform.isIOS) getIOSPermission();
+    //Get Notification Token And Associate It With The User Data
+    _firebaseMessaging.getToken().then((token) {
+      print("Firebase Messaging TOken: $token\n");
+      //Associate It With The User Store It. Whenever
+      // It Is Needed Get It
+      usersRef
+          .document(user.id)
+          .updateData({"androidNotificationToken": token});
+    });
+
+    _firebaseMessaging.configure(
+      //Map Strings As Keys And Dynamic For Its Value
+      // const message = {
+      //            //notification: { title: "Hello" body: body}
+      //            notification: {body},
+      //            token: androidNotificationToken,
+      //            data: {recipient: userId}
+      //        };
+//      //Send A Notification When App Is Off
+//      onLaunch: (Map<String, dynamic> message) async {},
+//      //Send A Message When App Is In The Background
+//      onResume: (Map<String, dynamic> message) async {},
+      //Send A Message While They Are Actively Using The App
+      onMessage: (Map<String, dynamic> message) async {
+        print('onMessage: $message\n');
+      },
+    );
+  }
+
+  getIOSPermission() {
+    _firebaseMessaging.requestNotificationPermissions(
+        IosNotificationSettings(alert: true, badge: true, sound: true));
+    _firebaseMessaging.onIosSettingsRegistered.listen((settings) {
+      print("Settings Registered: $settings");
+    });
   }
 
   //Whenever This Is Called You Need To Use ASYNC ans AWAIT
@@ -128,7 +176,8 @@ class _HomeState extends State<Home> {
       // Set In The Database. This Line Retrieves Those
       // Documents and Stores The in A User Object.
 
-      //Make user their own follower(to include their posts in their timeline)
+      //Make user their own follower(to include their
+      // posts in their timeline)
       await followersRef
           .document(user.id)
           .collection('userFollowers')
@@ -198,6 +247,9 @@ class _HomeState extends State<Home> {
   ///AuthScreen
   Widget buildAuthScreen() {
     return Scaffold(
+      //Key For Messaging
+      //Scaffold wraps all these pages
+      key: _scaffoldKey,
       body: PageView(
         children: <Widget>[
           Timeline(currentUser: currentUser),

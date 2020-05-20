@@ -22,7 +22,7 @@ class Upload extends StatefulWidget {
   _UploadState createState() => _UploadState();
 }
 
-//AutomaticKeepAliveClientMixin Requirement #1
+//AutomaticKeepAliveClientMixin Requirement #1 of 3
 class _UploadState extends State<Upload>
     with AutomaticKeepAliveClientMixin<Upload> {
   TextEditingController locationController = TextEditingController();
@@ -314,12 +314,12 @@ class _UploadState extends State<Upload>
     locationController.text = formattedAddress;
   }
 
-  //AutomaticKeepAliveClientMixin Requirement #2
+  //AutomaticKeepAliveClientMixin Requirement #2 of 3
   bool get wantKeepAlive => true;
 
   @override
   Widget build(BuildContext context) {
-    //AutomaticKeepAliveClientMixin Requirement #3
+    //AutomaticKeepAliveClientMixin Requirement #3 of 3
     super.build(context);
     return file == null ? buildSplashScreen() : buildUploadForm();
   }

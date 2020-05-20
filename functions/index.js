@@ -31,7 +31,8 @@ because {messageCollectionId} is a collection.
 However, users/{userId}/{messageCollectionId}/{messageId}
 is valid because {messageId} will always point to a document.*/
     .document('/followers/{userId}/userFollowers/{followerId}')
-/*Snapshot is the OUTPUT, Context is the INPUT*/
+/*Snapshot is the OUTPUT, Context is the INPUT
+snapshot.data is all the data/fields */
     .onCreate(async (snapshot, context) => {
 //Person Being Followed Supa Dupa Star
         const userId = context.params.userId;
@@ -219,3 +220,91 @@ exports.onDeletePost = functions.firestore
                  });
              });
          });
+
+
+
+/*Snapshot is the OUTPUT, Context is the INPUT
+snapshot.data is all the data/fields */
+//Collection To Watch
+    exports.onCreateActivityFeedItem = functions.firestore
+        .document('/feed/{userId}/feedItems/{activityFeedItem}')
+        .onCreate(async(snapshot, context) => {
+        console.log('Activity Feed Item Created', snapshot.data());
+
+        // Get User Who's Feed Was Added To
+        const userId = context.params.userId;
+        //Users Collection and Document that Is The User Id
+        //Back Ticks And ${} to Interpolate
+        const userRef = admin.firestore().doc(`users/${userId}`);
+        //Get All The Fields
+        const doc = await userRef.get();
+
+// 2) Once We Have The User Check If They Have A Notification Token
+    //This Is There When A User Checks In
+    const androidNotificationToken = doc.data()
+    .androidNotificationToken;
+    const createdActivityFeedItem = snapshot.data();
+
+    if (androidNotificationToken) {
+        //Send Notification
+        sendNotification(androidNotificationToken, createdActivityFeedItem);
+
+    } else {
+        console.log("No Token For User, Cannot Send Notification");
+    }
+
+    function sendNotification(androidNotificationToken, activityFeedItem) {
+        //const Cannot Change let Can
+        let body;
+
+// 3) Switch Body Value Based Off Of Notification Type
+    switch (activityFeedItem.type) {
+        case "comment":
+            body = `${activityFeedItem.userName} replied:
+            ${activityFeedItem.commentData}`;
+            //break lets you escape switch return
+            //exits iteration
+                break;
+        case "like":
+            body = `${activityFeedItem.userName} liked your post`;
+            break;
+        case "follow":
+            body = `${activityFeedItem.userName} started following you`;
+                break;
+            default:
+                break;
+        }
+
+// 4) Create Message For Push Notification
+        const message = {
+            //notification: { title: "Hello" body: body}
+            notification: {body},
+            token: androidNotificationToken,
+            data: {recipient: userId}
+        };
+
+// 5) Send Message With admin.messaging()
+
+        admin
+            .messaging()
+            .send(message)
+            .then(response => {
+            //response Is A Message String
+            console.log("Successfully Sent Message", response);
+            })
+            .catch(error => {
+                console.log("Error Sending Message", error);
+            })
+    }
+})
+
+
+
+
+
+
+
+
+
+
+
