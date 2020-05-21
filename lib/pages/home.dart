@@ -43,6 +43,7 @@ class Home extends StatefulWidget {
   ///Logout
   logout() {
     googleSignIn.signOut();
+    print('Logout\n');
   }
 }
 
@@ -74,7 +75,7 @@ class _HomeState extends State<Home> {
     //App Doesn't Keep State
     googleSignIn.signInSilently(suppressErrors: false).then((account) {
       handleSignIn(account: account);
-      print('Signed In Silently');
+      print('Signed In Silently\n');
     }).catchError((err) {
       print('Error Signing In: $err');
     });
@@ -84,15 +85,15 @@ class _HomeState extends State<Home> {
     if (account != null) {
       //Await has to be used if you call an ASYNC FUNCTION
       await createUserInFirestore();
-      print('Google Sign In Account Info => $account');
+      print('Google Sign In Account Info => $account\n');
       setState(() {
-        print('isAuth = true');
+        print('isAuth = true\n');
         isAuth = true;
       });
       configurePushNotifications();
     } else {
       setState(() {
-        print('isAuth = false');
+        print('isAuth = false\n');
         isAuth = false;
       });
     }
@@ -104,7 +105,7 @@ class _HomeState extends State<Home> {
     if (Platform.isIOS) getIOSPermission();
     //Get Notification Token And Associate It With The User Data
     _firebaseMessaging.getToken().then((token) {
-      print("Firebase Messaging TOken: $token\n");
+      print("Firebase Messaging TOKEN:::: $token\n");
       //Associate It With The User Store It. Whenever
       // It Is Needed Get It
       usersRef
@@ -127,6 +128,20 @@ class _HomeState extends State<Home> {
       //Send A Message While They Are Actively Using The App
       onMessage: (Map<String, dynamic> message) async {
         print('onMessage: $message\n');
+        //From message map  data object recipient property
+        final String recipientId = message['data']['recipient'];
+        //From message map notification object body property
+        final String body = message['notification']['body'];
+        if (recipientId == user.id) {
+          print("Notification Shown");
+          SnackBar snackbar = SnackBar(
+              content: Text(
+            body,
+            overflow: TextOverflow.ellipsis,
+          ));
+          _scaffoldKey.currentState.showSnackBar(snackbar);
+        }
+        print('NOTIFICATION Not Shown');
       },
     );
   }
@@ -249,6 +264,7 @@ class _HomeState extends State<Home> {
     return Scaffold(
       //Key For Messaging
       //Scaffold wraps all these pages
+      //Snackbar Will Show Here Only
       key: _scaffoldKey,
       body: PageView(
         children: <Widget>[

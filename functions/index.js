@@ -260,16 +260,16 @@ snapshot.data is all the data/fields */
 // 3) Switch Body Value Based Off Of Notification Type
     switch (activityFeedItem.type) {
         case "comment":
-            body = `${activityFeedItem.userName} replied:
+            body = `${activityFeedItem.username} replied:
             ${activityFeedItem.commentData}`;
             //break lets you escape switch return
             //exits iteration
                 break;
         case "like":
-            body = `${activityFeedItem.userName} liked your post`;
+            body = `${activityFeedItem.username} liked your post`;
             break;
         case "follow":
-            body = `${activityFeedItem.userName} started following you`;
+            body = `${activityFeedItem.username} started following you`;
                 break;
             default:
                 break;
